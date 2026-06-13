@@ -1,0 +1,10 @@
+Debug/
+*.elf
+*.hex
+*.map
+*.list
+*.o
+*.d
+*.su
+*.cyclo
+*.mk
