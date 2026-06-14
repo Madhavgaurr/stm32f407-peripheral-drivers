@@ -8,3 +8,6 @@ Debug/
 *.su
 *.cyclo
 *.mk
+.cproject
+.project
+.settings/
