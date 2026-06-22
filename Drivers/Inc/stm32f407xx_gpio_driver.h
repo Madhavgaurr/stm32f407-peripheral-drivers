@@ -66,10 +66,17 @@ typedef struct
 #define GPIO_MODE_ALTFN   2
 #define GPIO_MODE_ANALOG  3
 
-#define GPIO_MODE_IT_FT   4
-#define GPIO_MODE_IT_RT   5
-#define GPIO_MODE_IT_RFT  6
+#define GPIO_MODE_IT_FT   4          // Falling Edge
+#define GPIO_MODE_IT_RT   5          // Rising  Edge
+#define GPIO_MODE_IT_RFT  6          // Rising as well as Falling Edge
 
+
+/*
+*    GPIO pin output type macros 
+*/
+
+#define GPIO_OP_TYPE_PP    0
+#define GPIO_OP_TYPE_OD    1
 
 /*
  *    GPIO pin possible output speeds
@@ -83,12 +90,14 @@ typedef struct
 
 
 /*
- *    GPIO pin Pull Up and Pull Down macros
+ *    GPIO pin Pull Up and Pull Down  Register macros
  */
 
 #define GPIO_NO_PUPD       0
 #define GPIO_PIN_PU        1
 #define GPIO_PIN_PD        2
+
+
 
 
 
@@ -125,9 +134,29 @@ void GPIO_ToggleOutputPin(GPIO_RegDef_t  *pGPIOx , uint8_t PinNumber)           
  *  IRQ configuration and IRQ handling
  */
 
-void GPIO_IRQConfig(uint8_t IRQNumber , uint8_t IRQPriority , uint8_t EnorDi)            ;
-void GPIO_IRQHandling(uint8_t PinNumber)      ;
+// GPIO Interrupt Configuration 
 
+
+
+// 1) Enable GPIO + SYSCFG clocks
+// 2) Configure GPIO pin as input
+// 3) Configure pull-up / pull-down
+// 4) Map GPIO pin → EXTI line (SYSCFG)
+// 5) Configure EXTI trigger (Rising/Falling/Both)
+// 6) Unmask EXTI interrupt line
+// 7) Enable NVIC IRQ + set priority
+// 8) Write ISR (IRQ Handler)
+// 9) Clear EXTI pending flag inside ISR
+
+// EXTI0 line can be connected to GPIO pin 0 of any port (PA0, PB0, PC0, ...). The selection is 
+// done through the SYSCFG_EXTICR registers. Once selected, EXTI0 generates an interrupt request 
+// to the NVIC through the EXTI controller
+
+void GPIO_IRQInterruptConfig(uint8_t IRQNumber ,  uint8_t EnorDi)            ;
+void GPIO_IRQPriorityConfig(uint8_t IRQNumber , uint8_t IRQPriority)         ;
+void GPIO_IRQHandling(uint8_t PinNumber)                                     ;
+
+// GPIO → SYSCFG → EXTI → NVIC → ISR
 
 
 #endif /* INC_STM32F407XX_GPIO_DRIVER_H_ */
