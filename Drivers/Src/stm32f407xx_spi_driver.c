@@ -9,6 +9,12 @@
 #include "stm32f407xx.h"
 #include <stdbool.h>
 
+
+static void     spi_txe_interrupt_handle(SPI_Handle_t  *pHandle) ;
+static void    spi_rxne_interrupt_handle(SPI_Handle_t  *pHandle) ;
+static void spi_ovr_err_interrupt_handle(SPI_Handle_t  *pHandle) ;
+
+
 /*
  *  Peripheral Clock Setup
  */
@@ -499,9 +505,184 @@ uint8_t SPI_ReceiveDataIT(SPI_Handle_t  *pSPIHandle , uint8_t *pRxBuffer , uint3
 	return state ;
 }
 
+/***************************************************************************************************
+ *                      @brief   Interrupt-driven SPI transmission 
+ *
+ * SPI can generate interrupt requests for three categories of events:
+ *
+ *  1. TXE  (Transmit Buffer Empty)
+ *     --------------------------------
+ *     Event Flag        : TXE
+ *     Enable Bit        : TXEIE
+ *
+ *     Indicates that the transmit buffer (DR) is empty and ready to accept
+ *     the next data frame. Whenever TXE becomes SET and TXE interrupt is
+ *     enabled, the SPI peripheral requests an interrupt.
+ *
+ *
+ *  2. RXNE (Receive Buffer Not Empty)
+ *     --------------------------------
+ *     Event Flag        : RXNE
+ *     Enable Bit        : RXNEIE
+ *
+ *     Indicates that a new data frame has been received and is waiting in
+ *     the receive buffer. Software must read the DR register before the next
+ *     frame arrives to prevent an overrun condition.
+ *
+ *
+ *  3. Error Events
+ *     --------------------------------
+ *     Enable Bit        : ERRIE
+ *
+ *     The following error conditions share the same interrupt source:
+ *
+ *         MODF    - Mode fault
+ *         OVR     - Overrun error
+ *         CRCERR  - CRC calculation error
+ *         FRE     - TI frame format error
+ *
+ *     Whenever ERRIE is enabled and any of the above flags becomes SET,
+ *     the SPI peripheral generates an interrupt and software must determine
+ *     which error occurred by examining the SPI status register (SR).
+ *
+ *
+ * -----------------------------------------------------------------------------------------------
+ *                                     Generic SPI Interrupt Flow
+ * -----------------------------------------------------------------------------------------------
+ *
+ *                                    +----------------------+
+ *                                    |   Enter SPI ISR      |
+ *                                    +----------+-----------+
+ *                                               |
+ *                                               v
+ *                                  Read SPI Status Register (SR)
+ *                                               |
+ *                           +-------------------+--------------------+
+ *                           |                   |                    |
+ *                           v                   v                    v
+ *                      RXNE set ?          TXE set ?         Error Flag set ?
+ *                           |                   |                    |
+ *                           v                   v                    v
+ *                      Receive Handler      Transmit Handler     Error Handler
+ *
+ * The ISR always begins by determining which event generated the interrupt.
+ * Since multiple interrupt sources share the same IRQ line, software must
+ * inspect the corresponding status flags before servicing the event.
+ *
+ *
+ * -----------------------------------------------------------------------------------------------
+ *                                   TXE Interrupt Processing
+ * -----------------------------------------------------------------------------------------------
+ *
+ * TXE interrupt is responsible for continuously feeding the SPI Data Register during an interrupt
+ * -driven transmission.
+ *
+ * Every time TXE becomes SET:
+ *
+ *      1. Determine frame size (8-bit or 16-bit).
+ *
+ *      2. Load one data frame into SPI->DR.
+ *
+ *            8-bit mode  -> write one byte
+ *            16-bit mode -> write two bytes
+ *
+ *      3. Advance transmit buffer pointer.
+ *
+ *      4. Decrease remaining transmission length.
+ *
+ *      5. Check if all data has been transmitted.
+ *
+ *             Remaining Length == 0 ?
+ *
+ *                 YES
+ *                     • Disable TXE interrupt.
+ *                     • Mark SPI state as READY.
+ *                     • Release application resources.
+ *                     • Transmission completed.
+ *
+ *                 NO
+ *                     • Exit ISR.
+ *                     • Wait for next TXE interrupt.
+ *                     • Repeat until all bytes are transmitted.
+ *
+ *
+ * -----------------------------------------------------------------------------------------------
+ *                                   Important Design Principle
+ * -----------------------------------------------------------------------------------------------
+ *
+ * The CPU never waits for the SPI hardware.
+ *
+ * Instead:
+ *
+ *      TXE interrupt  ---> Hardware requests next byte
+ *      ISR            ---> Loads one frame into DR
+ *      Return         ---> CPU continues executing other tasks
+ *      TXE again      ---> ISR loads next frame
+ *
+ * This continues until the entire transmit buffer has been transferred,
+ * providing an efficient non-blocking SPI transmission mechanism.
+ *
+ **************************************************************************************************/
+
 
 
 void SPI_IRQHandling(SPI_Handle_t  *pHandle)
 {
+	uint8_t temp1 , temp2 ;
+
+	temp1   =  pHandle->pSpix->SR  & ( 1 << SPI_SR_TXE )   ;
+	temp2   =  pHandle->pSpix->CR2 & ( 1 << SPI_CR2_TXEIE) ;
+
+	if( temp1  & temp2 )
+	{
+		spi_txe_interrupt_handle() ;
+	}
+
+	temp1   =  pHandle->pSpix->SR  & ( 1 << SPI_SR_RXNE )   ;
+	temp2   =  pHandle->pSpix->CR2 & ( 1 << SPI_CR2_RXNEIE) ;
+
+
+	if( temp1 & temp2 )
+	{
+		spi_rxne_interrupt_handle() ;
+	}
+
+	temp1   =  pHandle->pSpix->SR  & ( 1 << SPI_SR_OVR )   ;
+	temp2   =  pHandle->pSpix->CR2 & ( 1 << SPI_CR2_ERRIE) ;
+
+	if( temp1 & temp2 )
+	{
+		spi_ovr_err_interrupt_handle() ;
+	}
+
+}
+
+
+
+static void     spi_txe_interrupt_handle(SPI_Handle_t  *pHandle)
+{
 	
+		if(pHandle->pSpix->CR1 & (1<<SPI_CR1_DFF))
+		{
+            // 16 bit DFF
+			pHandle->pSpix->DR   = *((uint16_t*)pHandle->pTxBuffer) ;
+			pHandle->TxLen -=    2                                  ;
+			(uint16_t*)pHandle->pTxBuffer++                         ;
+		}else{
+			// 8  bit DFF 
+
+			pHandle->pSpix->DR   = *(pHandle->pTxBuffer) ;
+			pHandle->TxLen -=    1                       ;
+			pHandle->pTxBuffer++                         ;
+		} 
+}
+
+static void    spi_rxne_interrupt_handle(SPI_Handle_t  *pHandle)
+{
+
+}
+
+static void spi_ovr_err_interrupt_handle(SPI_Handle_t  *pHandle)
+{
+
 }
