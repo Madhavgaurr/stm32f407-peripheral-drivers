@@ -13,6 +13,7 @@
 #define __vo volatile
 #include <stdint.h>
 #include <stdio.h>
+#include <string.h>
 
 /************************************************************************************************
  ***************************************ARM Cortex Processor Specific Details*********************
@@ -124,22 +125,22 @@
 /*Base Address of peripherals which are hanging on APB2 bus */
 
 #define TIM1_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x0000)
-#define TIM8_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x10400)
-#define USART1_BASE_ADDR                 (APB2PERIPH_BASE_ADDR + 0x11000)
-#define USART6_BASE_ADDR                 (APB2PERIPH_BASE_ADDR + 0x11400)
-#define ADC1_ADC2_ADC2_BASE_ADDR         (APB2PERIPH_BASE_ADDR + 0x12000)
-#define SDIO_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x12C00)
-#define SPI1_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x13000)
-#define SPI4_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x13400)
-#define SYSCFG_BASE_ADDR                 (APB2PERIPH_BASE_ADDR + 0x13800)
-#define EXTI_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x13C00)
-#define TIM9_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x14000)
-#define TIM10_BASE_ADDR                  (APB2PERIPH_BASE_ADDR + 0x14400)
-#define TIM11_BASE_ADDR                  (APB2PERIPH_BASE_ADDR + 0x14800)
-#define SPI5_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x15000)
-#define SPI6_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x15400)
-#define SAI1_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x15800)
-#define LCD_TFT_BASE_ADDR                (APB2PERIPH_BASE_ADDR + 0x16800)
+#define TIM8_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x0400)
+#define USART1_BASE_ADDR                 (APB2PERIPH_BASE_ADDR + 0x1000)
+#define USART6_BASE_ADDR                 (APB2PERIPH_BASE_ADDR + 0x1400)
+#define ADC1_ADC2_ADC2_BASE_ADDR         (APB2PERIPH_BASE_ADDR + 0x2000)
+#define SDIO_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x2C00)
+#define SPI1_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x3000)
+#define SPI4_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x3400)
+#define SYSCFG_BASE_ADDR                 (APB2PERIPH_BASE_ADDR + 0x3800)
+#define EXTI_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x3C00)
+#define TIM9_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x4000)
+#define TIM10_BASE_ADDR                  (APB2PERIPH_BASE_ADDR + 0x4400)
+#define TIM11_BASE_ADDR                  (APB2PERIPH_BASE_ADDR + 0x4800)
+#define SPI5_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x5000)
+#define SPI6_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x5400)
+#define SAI1_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x5800)
+#define LCD_TFT_BASE_ADDR                (APB2PERIPH_BASE_ADDR + 0x6800)
 
 
 
@@ -221,7 +222,48 @@ typedef struct{
 }SYSCFG_RegDef_t ;
 
 
+typedef struct 
+{
+	__vo  uint32_t CR1     ;
+	__vo  uint32_t CR2     ;
+	__vo  uint32_t SR      ;
+	__vo  uint32_t DR      ;
+	__vo  uint32_t CRCPR   ;
+	__vo  uint32_t RXCRCR  ;
+	__vo  uint32_t TXCRCR  ;
+	__vo  uint32_t I2SCFGR ;
+	__vo  uint32_t I2SPR   ;
+}SPI_RegDef_t;
 
+
+
+typedef struct 
+{
+	__vo  uint32_t SR      ;
+	__vo  uint32_t CR1     ;
+	__vo  uint32_t CR2     ;
+	__vo  uint32_t SMPR1   ;
+	__vo  uint32_t SMPR2   ;
+	__vo  uint32_t JOFR1   ;
+	__vo  uint32_t JOFR2   ;
+	__vo  uint32_t JOFR3   ;
+	__vo  uint32_t JOFR4   ;
+	__vo  uint32_t HTR     ;
+	__vo  uint32_t LTR     ;
+	__vo  uint32_t SQR1    ;
+	__vo  uint32_t SQR2    ;
+	__vo  uint32_t SQR3    ;
+	__vo  uint32_t JSQR    ;
+	__vo  uint32_t JDR1    ;
+	__vo  uint32_t JDR2    ;
+	__vo  uint32_t JDR3    ;
+	__vo  uint32_t JDR4    ;
+	__vo  uint32_t DR      ;
+	__vo  uint32_t CSR     ;
+	__vo  uint32_t CCR     ;
+	__vo  uint32_t CDR     ;
+
+}ADC_RegDef_t;
 
 
 /* Peripheral Definition */
@@ -241,6 +283,13 @@ typedef struct{
 #define RCC      ((RCC_RegDef_t* )(RCC_BASE_ADDR     ))
 #define EXTI     ((EXTI_RegDef_t*)(EXTI_BASE_ADDR    ))
 #define SYSCFG   ((SYSCFG_RegDef_t*)(SYSCFG_BASE_ADDR))
+
+#define SPI1     ((SPI_RegDef_t*)(SPI1_BASE_ADDR))
+#define SPI2     ((SPI_RegDef_t*)(SPI2_BASE_ADDR))
+#define SPI3     ((SPI_RegDef_t*)(SPI3_BASE_ADDR))
+#define SPI4     ((SPI_RegDef_t*)(SPI4_BASE_ADDR))
+#define SPI5     ((SPI_RegDef_t*)(SPI5_BASE_ADDR))
+#define SPI6     ((SPI_RegDef_t*)(SPI6_BASE_ADDR))
 
 
 
@@ -297,6 +346,19 @@ typedef struct{
 #define SPI5_PCLK_EN()      ( RCC->APB2ENR |=  (1<<20) )
 #define SPI6_PCLK_EN()      ( RCC->APB2ENR |=  (1<<21) )
 
+
+/*
+ * Clock Disable Macros for SPIx   peripheral
+ */
+
+#define SPI1_PCLK_DI()      ( RCC->APB2ENR &=  ~(1<<12) )
+#define SPI2_PCLK_DI()      ( RCC->APB1ENR &=  ~(1<<14) )
+#define SPI3_PCLK_DI()      ( RCC->APB1ENR &=  ~(1<<15) )
+#define SPI4_PCLK_DI()      ( RCC->APB2ENR &=  ~(1<<13) )
+#define SPI5_PCLK_DI()      ( RCC->APB2ENR &=  ~(1<<20) )
+#define SPI6_PCLK_DI()      ( RCC->APB2ENR &=  ~(1<<21) )
+
+
 /*
  * Clock Enable Macros for USARTx peripheral
  */
@@ -335,8 +397,11 @@ typedef struct{
 #define ENABLE  1
 #define DISABLE 0
 
-#define SET     ENABLE
-#define RESET   DISABLE
+#define SET           ENABLE
+#define RESET         DISABLE
+
+#define FLAG_RESET    RESET
+#define FLAG_SET      SET
 
 #define GPIO_PIN_SET    SET
 #define GPIO_PIN_RESET  RESET
@@ -392,6 +457,16 @@ typedef struct{
 #define IRQ_NO_EXTI15_10     40
 
 
+/*                                 IRQ Numbers for SPI Peripheral                                */
+
+#define IRQ_NO_SPI1          35
+#define IRQ_NO_SPI2          36
+#define IRQ_NO_SPI3          51
+#define IRQ_NO_SPI4          84
+#define IRQ_NO_SPI5          85
+#define IRQ_NO_SPI6          86
+
+
 
 // Priority Levels
 #define NVIC_IRQ_PRIO0       0
@@ -412,6 +487,58 @@ typedef struct{
 #define NVIC_IRQ_PRIO15      15
 
 
+
+/********************************************************************************************** 
+ *                             Bit Position Definitions of SPI Peripheral
+***********************************************************************************************/
+
+#define   SPI_CR1_CPHA            0
+#define   SPI_CR1_CPOL            1
+#define   SPI_CR1_MSTR            2
+#define   SPI_CR1_BR              3
+#define   SPI_CR1_SPE             6
+#define   SPI_CR1_LSB_FIRST       7
+#define   SPI_CR1_SSI             8
+#define   SPI_CR1_SSM             9
+#define   SPI_CR1_RXONLY          10
+#define   SPI_CR1_DFF             11
+#define   SPI_CR1_CRC_NEXT        12
+#define   SPI_CR1_CRC_EN          13
+#define   SPI_CR1_BIDI_OE         14
+#define   SPI_CR1_BIDI_MODE       15
+
+
+#define   SPI_CR2_RXDMAEN         0
+#define   SPI_CR2_TXDMAEN         1
+#define   SPI_CR2_SSOE            2
+#define   SPI_CR2_FRF             4
+#define   SPI_CR2_ERRIE           5
+#define   SPI_CR2_RXNEIE          6
+#define   SPI_CR2_TXEIE           7
+
+
+
+#define   SPI_SR_RXNE             0
+#define   SPI_SR_TXE              1
+#define   SPI_SR_CHSIDE           2
+#define   SPI_SR_UDR              3
+#define   SPI_SR_CRC_ERR          4
+#define   SPI_SR_MODF             5
+#define   SPI_SR_OVR              6
+#define   SPI_SR_BSY              7
+#define   SPI_SR_FRE              8
+
+
+
+
+
+
+
+
+
+
+
 #include "stm32f407xx_gpio_driver.h"
+#include "stm32f407xx_spi_driver.h"
 
 #endif /* INC_STM32F407XX_H_ */

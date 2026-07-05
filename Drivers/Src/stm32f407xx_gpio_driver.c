@@ -133,10 +133,14 @@ void GPIO_PeriClockControl(GPIO_RegDef_t  *pGPIOx , uint8_t EnorDi  )
 
 
 void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
-{
+{   
+
+	 GPIO_PeriClockControl(pGPIOHandle->pGPIOx,ENABLE) ;
 	// 1. Configure the mode of the gpio pin
 
 	uint32_t temp = 0 ; // Temporary Register
+
+	/*Check for the error of shift of clearing and setting */
 
 	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG)
 	{
@@ -155,11 +159,10 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 
 		   EXTI->FTSR   |=  (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber);
 
-//		   int value = ((EXTI->FTSR) & (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)) ? 1 : 0;
-//
-//		   printf("%d\n",value) ;
+		   int value = ((EXTI->FTSR) & (1 << pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber)) ? 1 : 0;
 
-		   printf("FTSR = %p\n", ((EXTI_BASE_ADDR)));
+		   printf("%d\n",value) ;
+
 
 
 
@@ -536,7 +539,7 @@ void GPIO_IRQPriorityConfig(uint8_t IRQNumber , uint8_t IRQPriority)
 
 	uint8_t shift_amount =  (8*iprx_section) + (8-NO_PR_BITS_IMPLEMENTED) ;
 
-	*(NVIC_IPR_BASE_ADDR + (iprx*4))  |=  (IRQPriority << shift_amount)   ;
+	*(NVIC_IPR_BASE_ADDR + (iprx))  |=  (IRQPriority << shift_amount)   ;
 
 }
 

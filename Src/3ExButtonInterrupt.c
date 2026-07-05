@@ -2,13 +2,16 @@
 
 
 
+int global = 1 ;
 
 
 
 int main()
 {
-    GPIO_Handle_t GpioLed    ;
-    GPIO_Handle_t GpioButton ;
+    GPIO_Handle_t GpioLed  = {0}   ;
+    GPIO_Handle_t GpioButton = {0} ;
+
+
 
 
     SYSCFG_PCLK_EN () ;
@@ -72,7 +75,10 @@ void EXTI15_10_IRQHandler(void)
 {
      GPIO_IRQHandling(GPIO_PIN_NO_12)            ;
      GPIO_ToggleOutputPin(GPIOD,GPIO_PIN_NO_12)  ;
+    
 }
+
+
 
 /*                                       
                                     Debugging the Interrupt
