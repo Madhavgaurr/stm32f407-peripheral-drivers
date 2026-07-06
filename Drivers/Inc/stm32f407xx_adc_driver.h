@@ -12,7 +12,7 @@
 
 typedef struct 
 {
-     
+    uint8_t   ADC_Resolution ; 
 }ADC_Config_t;
 
 
@@ -21,6 +21,15 @@ typedef struct
     ADC_RegDef_t  *pADCx     ; 
     ADC_Config_t  ADC_Config ;  
 }ADC_Handle_t;   
+
+
+
+
+
+void ADC_PeriClockControl(ADC_RegDef_t  *pGPIOx , uint8_t EnorDi  ) ;
+
+
+
 
 
 #endif /* INC_STM32F407XX_GPIO_DRIVER_H_ */

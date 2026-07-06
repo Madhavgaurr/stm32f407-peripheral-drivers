@@ -1,8 +1,8 @@
 /*
- * stm32f407xx.h
+ *                                         stm32f407xx.h
  *
- *  Created on: May 15, 2026
- *      Author: madhav-gaur
+ *                                   Created on: May 15, 2026
+ *                                       Author: madhav-gaur
  */
 
 
@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <stddef.h>
 
 /************************************************************************************************
  ***************************************ARM Cortex Processor Specific Details*********************
@@ -59,7 +60,7 @@
 #define AHB2PERIPH_BASE_ADDR             0x50000000UL
 
 
-/*Base Address of peripherals which are hanging on AHB1 bus */
+/****************Base Address of peripherals which are hanging on AHB1 Bus ***********************/
 
 #define GPIOA_BASE_ADDR                  (AHB1PERIPH_BASE_ADDR + 0x0000)
 #define GPIOB_BASE_ADDR                  (AHB1PERIPH_BASE_ADDR + 0x0400)
@@ -74,7 +75,7 @@
 #define GPIOK_BASE_ADDR                  (AHB1PERIPH_BASE_ADDR + 0x2800)
 #define CRC_BASE_ADDR                    (AHB1PERIPH_BASE_ADDR + 0x3000)
 #define RCC_BASE_ADDR                    (AHB1PERIPH_BASE_ADDR + 0x3800)
-#define FLASHINTERFACEREG_BASE_ADDR      (AHB1PERIPH_BASE_ADDR + 0x3C00)
+#define FLASH_INTERFACE_REG_BASE_ADDR      (AHB1PERIPH_BASE_ADDR + 0x3C00)
 #define BKPSRAM_BASE_ADDR                (AHB1PERIPH_BASE_ADDR + 0x4000)
 #define DMA1_BASE_ADDR                   (AHB1PERIPH_BASE_ADDR + 0x6000)
 #define DMA2_BASE_ADDR                   (AHB1PERIPH_BASE_ADDR + 0x6400)
@@ -128,7 +129,7 @@
 #define TIM8_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x0400)
 #define USART1_BASE_ADDR                 (APB2PERIPH_BASE_ADDR + 0x1000)
 #define USART6_BASE_ADDR                 (APB2PERIPH_BASE_ADDR + 0x1400)
-#define ADC1_ADC2_ADC2_BASE_ADDR         (APB2PERIPH_BASE_ADDR + 0x2000)
+#define ADC1_ADC2_ADC3_BASE_ADDR         (APB2PERIPH_BASE_ADDR + 0x2000)
 #define SDIO_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x2C00)
 #define SPI1_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x3000)
 #define SPI4_BASE_ADDR                   (APB2PERIPH_BASE_ADDR + 0x3400)
@@ -146,8 +147,7 @@
 
 
 
-/**/
-
+/*******************Register Map for General Purpose Input Output Peripheral*********************/
 
 typedef struct{
 
@@ -162,6 +162,10 @@ typedef struct{
 	__vo uint32_t  AFR[2]   ;
 
 }GPIO_RegDef_t;
+
+
+/*********************Register Map for Reset and Clock Control Peripheral*************************/
+
 
 typedef struct{
 
@@ -202,6 +206,8 @@ typedef struct{
 
 }RCC_RegDef_t;
 
+/********************Register Map for External Interrupt/Event Controller Interface.*************/
+
 
 typedef struct{
 
@@ -212,6 +218,9 @@ typedef struct{
 	__vo uint32_t  SWIER      ;
 	__vo uint32_t  PR         ;
 }EXTI_RegDef_t ;
+
+
+
 
 
 typedef struct{
@@ -266,6 +275,8 @@ typedef struct
 }ADC_RegDef_t;
 
 
+
+
 /* Peripheral Definition */
 
 #define GPIOA    ((GPIO_RegDef_t*)(GPIOA_BASE_ADDR))
@@ -284,6 +295,8 @@ typedef struct
 #define EXTI     ((EXTI_RegDef_t*)(EXTI_BASE_ADDR    ))
 #define SYSCFG   ((SYSCFG_RegDef_t*)(SYSCFG_BASE_ADDR))
 
+
+
 #define SPI1     ((SPI_RegDef_t*)(SPI1_BASE_ADDR))
 #define SPI2     ((SPI_RegDef_t*)(SPI2_BASE_ADDR))
 #define SPI3     ((SPI_RegDef_t*)(SPI3_BASE_ADDR))
@@ -292,10 +305,13 @@ typedef struct
 #define SPI6     ((SPI_RegDef_t*)(SPI6_BASE_ADDR))
 
 
+#define ADC1     ((ADC_RegDef_t*)(ADC1_ADC2_ADC3_BASE_ADDR))
+#define ADC2     ((ADC_RegDef_t*)(ADC1_ADC2_ADC3_BASE_ADDR + 0x100))
+#define ADC3     ((ADC_RegDef_t*)(ADC1_ADC2_ADC3_BASE_ADDR + 0x200))
 
-/*
- * Clock Enable Macros for GPIOx peripheral
- */
+
+
+/*                             Clock Enable Macros for GPIOx peripheral                           */
 
 #define GPIOA_PCLK_EN()      ( RCC->AHB1ENR |=  (1<<0) )
 #define GPIOB_PCLK_EN()      ( RCC->AHB1ENR |=  (1<<1) )
@@ -309,9 +325,14 @@ typedef struct
 #define GPIOJ_PCLK_EN()      ( RCC->AHB1ENR |=  (1<<9) )
 #define GPIOK_PCLK_EN()      ( RCC->AHB1ENR |=  (1<<10))
 
-/*
- * Clock Disable Macros for GPIOx peripheral
- */
+
+/*                              Clock Enable Macros for ADCx peripheral                           */
+
+// To be done 
+
+
+
+/*                              Clock Disable Macros for GPIOx peripheral                        */
 
 #define GPIOA_PCLK_DI()      ( RCC->AHB1ENR &=  ~(1<<0) )
 #define GPIOB_PCLK_DI()      ( RCC->AHB1ENR &=  ~(1<<1) )
@@ -327,17 +348,13 @@ typedef struct
 
 
 
-/*
- * Clock Enable Macros for I2Cx   peripheral
- */
+/*                               Clock Enable Macros for I2Cx   peripheral                        */
 
 #define I2C1_PCLK_EN()      ( RCC->APB1ENR |=  (1<<21) )
 #define I2C2_PCLK_EN()      ( RCC->APB1ENR |=  (1<<22) )
 #define I2C3_PCLK_EN()      ( RCC->APB1ENR |=  (1<<23) )
 
-/*
- * Clock Enable Macros for SPIx   peripheral
- */
+/*                               Clock Enable Macros for SPIx   peripheral                        */
 
 #define SPI1_PCLK_EN()      ( RCC->APB2ENR |=  (1<<12) )
 #define SPI2_PCLK_EN()      ( RCC->APB1ENR |=  (1<<14) )
@@ -347,9 +364,7 @@ typedef struct
 #define SPI6_PCLK_EN()      ( RCC->APB2ENR |=  (1<<21) )
 
 
-/*
- * Clock Disable Macros for SPIx   peripheral
- */
+/*                               Clock Disable Macros for SPIx   peripheral                       */
 
 #define SPI1_PCLK_DI()      ( RCC->APB2ENR &=  ~(1<<12) )
 #define SPI2_PCLK_DI()      ( RCC->APB1ENR &=  ~(1<<14) )
@@ -370,13 +385,10 @@ typedef struct
 #define SYSCFG_PCLK_EN()    ( RCC->APB2ENR |=  (1<<14) )
 
 
-/*
- *
- *  Macros to reset GPIOx peripheral
- *
- */
+/**********************************Macros to reset GPIOx peripheral*******************************/
 
-// do while condition zero loop : This is a technique in 'C' programming to execute multiple 'C' statements using single 'C' macro
+/*do while condition zero loop : This is a technique in 'C' programming to execute multiple 'C'
+ statements using single 'C' macro                                                             */
 
 #define    GPIOA_REG_RESET()    do{ RCC->AHB1RSTR |= (1<<0)  ; RCC->AHB1RSTR &= ~(1<<0)  ;  }while(0)
 #define    GPIOB_REG_RESET()    do{ RCC->AHB1RSTR |= (1<<1)  ; RCC->AHB1RSTR &= ~(1<<1)  ;  }while(0)
@@ -406,7 +418,7 @@ typedef struct
 #define GPIO_PIN_SET    SET
 #define GPIO_PIN_RESET  RESET
 
-// Implementation of  GPIO_BASEADDR_TO_CODE
+/***************************Implementation of  GPIO_BASEADDR_TO_CODE******************************/ 
 
 #define GPIO_BASEADDR_TO_CODE(x)     ( (x==GPIOA) ? 0 :\
                                        (x==GPIOB) ? 1 :\
@@ -418,35 +430,48 @@ typedef struct
 									   (x==GPIOH) ? 7 :0)
                                 
 
-//
+/*
+    In STM32, an Interrupt Request Number (IRQ Number) is the number used by the NVIC
+    (Nested Vector Interrupt Controller) to identify a particular interrupt source.
+
+                                Think of it like this:
+
+                                    Peripheral/Event
+                                          ↓
+                                  Generates Interrupt
+                                          ↓
+                                  Assigned IRQ Number
+                                          ↓
+                                  NVIC uses IRQ Number
+                                          ↓
+                              Corresponding ISR executes
+
+    For EXTI, the mapping is not always 1-to-1.
+
+    EXTI Line → IRQ Number Mapping (STM32F4)
+
+    EXTI Line     | IRQ Name         | IRQ Number
+    ---------------------------------------------
+    EXTI0         | EXTI0_IRQn       | 6
+    EXTI1         | EXTI1_IRQn       | 7
+    EXTI2         | EXTI2_IRQn       | 8
+    EXTI3         | EXTI3_IRQn       | 9
+    EXTI4         | EXTI4_IRQn       | 10
+    EXTI5-9       | EXTI9_5_IRQn     | 23
+    EXTI10-15     | EXTI15_10_IRQn   | 40
 
 
-//  In STM32, an Interrupt Request Number (IRQ Number) is the number used by the NVIC 
-// (Nested Vector Interrupt Controller) to identify a particular interrupt source.
+    IRQ Number Macros:
 
-// Think of it like this:
+    #define IRQ_NO_EXTI0         6
+    #define IRQ_NO_EXTI1         7
+    #define IRQ_NO_EXTI2         8
+    #define IRQ_NO_EXTI3         9
+    #define IRQ_NO_EXTI4         10
+    #define IRQ_NO_EXTI9_5       23
+    #define IRQ_NO_EXTI15_10     40
+*/
 
-// Peripheral/Event
-//       ↓
-// Generates Interrupt
-//       ↓
-// Assigned IRQ Number
-//       ↓
-// NVIC uses IRQ Number
-//       ↓
-// Corresponding ISR executes
-
-// For EXTI, the mapping is not always 1-to-1.
-
-// EXTI Line → IRQ Number Mapping (STM32F4)
-// EXTI Line	IRQ Name	IRQ Number
-// EXTI0	EXTI0_IRQn	6
-// EXTI1	EXTI1_IRQn	7
-// EXTI2	EXTI2_IRQn	8
-// EXTI3	EXTI3_IRQn	9
-// EXTI4	EXTI4_IRQn	10
-// EXTI5-9	EXTI9_5_IRQn	23
-// EXTI10-15	EXTI15_10_IRQn	40
 
 #define IRQ_NO_EXTI0         6
 #define IRQ_NO_EXTI1         7
@@ -467,8 +492,8 @@ typedef struct
 #define IRQ_NO_SPI6          86
 
 
+/*******************************************Priority Levels**************************************/
 
-// Priority Levels
 #define NVIC_IRQ_PRIO0       0
 #define NVIC_IRQ_PRIO1       1
 #define NVIC_IRQ_PRIO2       2
@@ -487,10 +512,12 @@ typedef struct
 #define NVIC_IRQ_PRIO15      15
 
 
-
 /********************************************************************************************** 
  *                             Bit Position Definitions of SPI Peripheral
+ *                 Used to represent a specific bit position inside a register.
 ***********************************************************************************************/
+
+/******************************Bit Mask Macros for the SPI Control Register 1*********************/
 
 #define   SPI_CR1_CPHA            0
 #define   SPI_CR1_CPOL            1
@@ -507,6 +534,7 @@ typedef struct
 #define   SPI_CR1_BIDI_OE         14
 #define   SPI_CR1_BIDI_MODE       15
 
+/******************************Bit Mask Macros for the SPI Control Register 2*********************/
 
 #define   SPI_CR2_RXDMAEN         0
 #define   SPI_CR2_TXDMAEN         1
@@ -517,6 +545,7 @@ typedef struct
 #define   SPI_CR2_TXEIE           7
 
 
+/*********************************Bit Mask Macros for the SPI Status Register*********************/
 
 #define   SPI_SR_RXNE             0
 #define   SPI_SR_TXE              1
@@ -527,15 +556,6 @@ typedef struct
 #define   SPI_SR_OVR              6
 #define   SPI_SR_BSY              7
 #define   SPI_SR_FRE              8
-
-
-
-
-
-
-
-
-
 
 
 #include "stm32f407xx_gpio_driver.h"

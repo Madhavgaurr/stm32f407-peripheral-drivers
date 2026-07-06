@@ -20,6 +20,13 @@
 #define SPI_BUSY_IN_TX    2
 
 
+/* Possible SPI  Application Events */
+
+#define SPI_TX_EVENT_CMPLT            1
+#define SPI_RX_EVENT_CMPLT            2
+#define SPI_EVENT_OVR_ERR             3
+#define SPI_EVENT_CRC_ERR             4
+
 /*
      Configuration structure of SPIx peripheral 
 */
@@ -133,7 +140,19 @@ typedef struct
 */
 
 void SPI_PeriClockControl(SPI_RegDef_t  *pSPIx , uint8_t EnorDi  ) ;
-void SPI_SSIConfig(SPI_RegDef_t  *pSPIx , uint8_t EnorDi  ) ;
+void SPI_SSIConfig(SPI_RegDef_t  *pSPIx , uint8_t EnorDi         ) ;
+void SPI_SSOEConfig(SPI_RegDef_t *pSPIx , uint8_t Enordi         ) ;
+uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx , uint32_t FlagName) ;
+void SPIClearOVRFlag(SPI_RegDef_t  *pSPIx)                         ;
+void SPI_CloseTransmission(SPI_Handle_t *pSPIHandle ) ;
+void SPI_CloseReception(SPI_Handle_t *pSPIHandle ) ;
+
+
+/*
+                                     Application Callback
+*/
+
+void SPI_ApplicationEventCallback(SPI_Handle_t *pSPIHandle , uint8_t AppEv) ;
 
 /*
  *  Init and De-init
